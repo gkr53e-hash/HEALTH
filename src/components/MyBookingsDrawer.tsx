@@ -1,5 +1,19 @@
 import React from 'react';
-import { X, Calendar, Clock, MapPin, CheckCircle, FileText, Download, AlertTriangle, ArrowRight, Home } from 'lucide-react';
+import {
+  X,
+  Calendar,
+  Clock,
+  MapPin,
+  CheckCircle,
+  FileText,
+  Download,
+  AlertTriangle,
+  ArrowRight,
+  Home,
+  ShieldCheck,
+  Building2,
+  Sparkles,
+} from 'lucide-react';
 import { BookingRequest } from '../types/lab';
 import { formatCurrency } from '../utils/labBookingLogic';
 
@@ -19,20 +33,33 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-slate-900/50 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-50 overflow-hidden bg-slate-950/60 backdrop-blur-sm flex justify-end animate-in fade-in duration-200"
+      onClick={onClose}
+    >
       <div
-        className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300"
+        className="w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-slate-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200">
-          <div>
-            <h2 className="text-xl font-black text-slate-900">My Lab Bookings</h2>
-            <p className="text-xs text-slate-500">Track sample collection & reports</p>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-teal-50/60 via-slate-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-700 text-white flex items-center justify-center font-black shadow-xs">
+              <FileText className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg font-black text-slate-900">My Lab Bookings</h2>
+                <span className="px-2 py-0.5 text-[10px] font-extrabold bg-teal-100 text-teal-800 rounded-full">
+                  {bookings.filter((b) => b.status !== 'Cancelled').length} Active
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">Track sample collection & digital reports</p>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Close drawer"
           >
             <X className="w-5 h-5" />
@@ -43,7 +70,7 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
         <div className="flex-1 overflow-y-auto p-6 space-y-4">
           {bookings.length === 0 ? (
             <div className="text-center py-16 px-4">
-              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mx-auto mb-4 border border-teal-100">
                 <Calendar className="w-8 h-8" />
               </div>
               <h3 className="text-base font-bold text-slate-900">No bookings yet</h3>
@@ -52,7 +79,7 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
               </p>
               <button
                 onClick={onClose}
-                className="px-5 py-2.5 bg-teal-700 hover:bg-teal-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer shadow-xs"
+                className="px-5 py-2.5 bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-bold rounded-xl text-xs transition-all cursor-pointer shadow-sm"
               >
                 Explore Lab Tests
               </button>
@@ -61,11 +88,14 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
             bookings.map((booking) => (
               <div
                 key={booking.id}
-                className="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3 relative overflow-hidden"
+                className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm hover:shadow-md transition-all space-y-3 relative overflow-hidden group"
               >
+                {/* Accent top stripe */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-teal-500 to-cyan-500" />
+
                 {/* Status bar */}
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-bold text-slate-400">
+                <div className="flex items-center justify-between pt-1">
+                  <span className="font-mono text-xs font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                     {booking.id}
                   </span>
                   <span
@@ -82,7 +112,9 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
                 </div>
 
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">{booking.labName}</h4>
+                  <h4 className="font-bold text-slate-900 text-sm group-hover:text-teal-700 transition-colors">
+                    {booking.labName}
+                  </h4>
                   <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
                     <span className="flex items-center gap-1 font-medium">
                       <Calendar className="w-3.5 h-3.5 text-teal-600" />
@@ -97,18 +129,18 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
                 </div>
 
                 {/* Mode & Patient */}
-                <div className="p-2.5 bg-slate-50 rounded-xl text-xs space-y-1">
+                <div className="p-3 bg-slate-50 rounded-xl text-xs space-y-1.5 border border-slate-100">
                   <div className="flex items-center justify-between text-slate-600 font-medium">
-                    <span className="flex items-center gap-1">
-                      <Home className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="flex items-center gap-1.5 font-bold text-slate-800">
+                      <Home className="w-3.5 h-3.5 text-teal-600" />
                       {booking.mode === 'home' ? 'Home Sample Collection' : 'Centre Visit'}
                     </span>
-                    <span className="font-bold text-slate-900">
+                    <span className="font-black text-slate-900 text-sm">
                       {formatCurrency(booking.totalAmount)}
                     </span>
                   </div>
-                  <p className="text-slate-500 text-[11px] truncate">
-                    Patient: {booking.patientName} ({booking.patientPhone})
+                  <p className="text-slate-600 text-[11px] truncate">
+                    Patient: <strong className="text-slate-800">{booking.patientName}</strong> ({booking.patientPhone})
                   </p>
                   <p className="text-slate-500 text-[11px] truncate">
                     Address: {booking.address}
@@ -116,7 +148,7 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
                 </div>
 
                 {/* Tests List */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <span className="text-[10px] uppercase font-extrabold tracking-wider text-slate-400">
                     Booked Tests ({booking.tests.length})
                   </span>
@@ -124,7 +156,7 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
                     {booking.tests.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded-md font-medium"
+                        className="px-2 py-0.5 bg-slate-100 text-slate-700 text-[11px] rounded-md font-medium border border-slate-200/60"
                       >
                         {t.name}
                       </span>
@@ -137,15 +169,15 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
                   <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                     <button
                       onClick={() => {
-                        const sampleReport = `MEDHONE DIAGNOSTIC REPORT\nPatient: ${booking.patientName}\nLab: ${booking.labName}\nTests: ${booking.tests.map((t) => t.name).join(', ')}\nStatus: Verified by Pathologist.`;
+                        const sampleReport = `========================================================\nONECARE SPECIAL HEALTHCARE PLATFORM\nCertified Diagnostic Booking Confirmation & Receipt\n========================================================\nBooking ID: ${booking.id}\nPatient: ${booking.patientName}\nPhone: ${booking.patientPhone}\nLab: ${booking.labName}\nMode: ${booking.mode === 'home' ? 'Home Sample Collection' : 'Centre Visit'}\nSlot: ${booking.slotDate} (${booking.slotTime})\nAddress: ${booking.address}\n\nTESTS SCHEDULED:\n${booking.tests.map((t) => `• ${t.name} - ₹${t.price}`).join('\n')}\n\nTOTAL AMOUNT: ₹${booking.totalAmount}\nSTATUS: ${booking.status}\n\nAccreditation: NABL / CAP / ISO 15189 Certified\nSupport Helpline: 1800-208-1080 (Toll Free 24x7)\n========================================================`;
                         const blob = new Blob([sampleReport], { type: 'text/plain' });
                         const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = `${booking.id}-acknowledgement.txt`;
+                        a.download = `${booking.id}-OneCareSpecial-Receipt.txt`;
                         a.click();
                       }}
-                      className="inline-flex items-center gap-1 text-xs font-bold text-teal-700 hover:text-teal-900 cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-900 px-2.5 py-1.5 rounded-lg hover:bg-teal-50 transition-colors cursor-pointer"
                     >
                       <Download className="w-3.5 h-3.5" />
                       <span>Download Receipt</span>
@@ -153,7 +185,7 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
 
                     <button
                       onClick={() => onCancelBooking(booking.id)}
-                      className="text-xs font-semibold text-rose-600 hover:text-rose-800 cursor-pointer"
+                      className="text-xs font-semibold text-rose-600 hover:text-rose-800 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -167,3 +199,4 @@ export const MyBookingsDrawer: React.FC<MyBookingsDrawerProps> = ({
     </div>
   );
 };
+

@@ -1,5 +1,20 @@
 import React, { useState } from 'react';
-import { X, Check, Calendar, Clock, MapPin, AlertCircle, Sparkles, User, Phone, Home, ShieldCheck } from 'lucide-react';
+import {
+  X,
+  Check,
+  Calendar,
+  Clock,
+  MapPin,
+  AlertCircle,
+  Sparkles,
+  User,
+  Phone,
+  Home,
+  ShieldCheck,
+  Building2,
+  ChevronRight,
+  Info
+} from 'lucide-react';
 import { BookingItem, BookingMode, BookingRequest, LabPartner, LabTest } from '../types/lab';
 import {
   calculateBookingTotal,
@@ -27,7 +42,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
   onSuccess,
 }) => {
   const [mode, setMode] = useState<BookingMode>(initialMode);
-  
+
   // Available tests for this lab
   const testMap = new Map(tests.map((t) => [t.id, t]));
   const labTests = lab.allTestIds.map((id) => testMap.get(id)).filter(Boolean) as LabTest[];
@@ -73,7 +88,6 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         return [...prev, id];
       }
     });
-    // Clear test selection error if any
     if (errors.tests) {
       setErrors((prev) => ({ ...prev, tests: undefined }));
     }
@@ -138,7 +152,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
@@ -149,9 +163,19 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         aria-labelledby="booking-modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-white sticky top-0 z-10">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-teal-50/70 via-slate-50 to-white sticky top-0 z-10">
           <div>
-            <h2 id="booking-modal-title" className="text-xl font-extrabold text-slate-900">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-teal-100 text-teal-800 rounded-md">
+                Certified Diagnostic
+              </span>
+              {lab.badge && (
+                <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded-md">
+                  {lab.badge}
+                </span>
+              )}
+            </div>
+            <h2 id="booking-modal-title" className="text-xl font-black text-slate-900 tracking-tight">
               {lab.name}
             </h2>
             <div className="flex items-center gap-1.5 text-xs text-slate-500 mt-0.5">
@@ -161,7 +185,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -173,16 +197,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           {/* Select Tests Section */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-extrabold text-slate-800">Select tests</label>
-              <span className="text-xs font-semibold text-teal-700">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-700">
+                1. Select Diagnostic Tests
+              </label>
+              <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
                 {selectedTestIds.length} of {labTests.length} selected
               </span>
             </div>
 
             {errors.tests && (
-              <p className="text-xs font-semibold text-red-600 flex items-center gap-1 mb-2">
-                <AlertCircle className="w-3.5 h-3.5" />
-                {errors.tests}
+              <p className="text-xs font-semibold text-rose-600 flex items-center gap-1 mb-2 bg-rose-50 p-2 rounded-xl border border-rose-200">
+                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>{errors.tests}</span>
               </p>
             )}
 
@@ -195,13 +221,13 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     onClick={() => toggleTest(test.id)}
                     className={`flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer ${
                       isSelected
-                        ? 'border-teal-600 bg-teal-50/50 ring-1 ring-teal-600'
+                        ? 'border-teal-600 bg-teal-50/60 ring-1 ring-teal-600/30 shadow-2xs'
                         : 'border-slate-200 hover:border-slate-300 bg-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                        className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-colors ${
                           isSelected
                             ? 'border-teal-600 bg-teal-600 text-white'
                             : 'border-slate-300 bg-white'
@@ -213,9 +239,17 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                         <span className="text-sm font-bold text-slate-900 block">
                           {test.name}
                         </span>
-                        <span className="text-[11px] font-medium text-slate-500 uppercase tracking-wider">
-                          {test.category} • {test.reportTime}
-                        </span>
+                        <div className="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+                          <span className="text-teal-700 font-bold">{test.category}</span>
+                          <span>•</span>
+                          <span>{test.reportTime}</span>
+                          {test.fastingHours ? (
+                            <>
+                              <span>•</span>
+                              <span className="text-amber-700">{test.fastingHours}h fasting</span>
+                            </>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
                     <span className="text-sm font-black text-slate-900">
@@ -229,59 +263,63 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
           {/* Mode Toggle */}
           <div>
-            <label className="text-sm font-extrabold text-slate-800 block mb-2">Mode</label>
-            <div className="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200 w-full sm:w-auto">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-700 block mb-2">
+              2. Appointment Mode
+            </label>
+            <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-2xl border border-slate-200">
               <button
                 type="button"
                 onClick={() => setMode('home')}
-                className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
                   mode === 'home'
                     ? 'bg-teal-700 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <Home className="w-4 h-4" />
-                Home collection
+                <span>Home Collection</span>
               </button>
               <button
                 type="button"
                 onClick={() => setMode('centre')}
-                className={`flex-1 sm:flex-initial px-5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                className={`py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
                   mode === 'centre'
                     ? 'bg-teal-700 text-white shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <MapPin className="w-4 h-4" />
-                Centre visit
+                <Building2 className="w-4 h-4" />
+                <span>Centre Walk-in</span>
               </button>
             </div>
             {mode === 'home' && totals.collectionFee > 0 && (
-              <p className="text-xs text-amber-700 font-medium mt-1.5 flex items-center gap-1">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                Add ₹{totals.freeThreshold - totals.subtotal} more to get FREE home collection!
+              <p className="text-xs text-amber-700 font-medium mt-2 flex items-center gap-1.5 bg-amber-50 p-2 rounded-xl border border-amber-200">
+                <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                <span>Add ₹{totals.freeThreshold - totals.subtotal} more to unlock <strong>FREE Home Collection</strong>!</span>
               </p>
             )}
             {mode === 'home' && totals.freeCollectionQualified && (
-              <p className="text-xs text-emerald-700 font-semibold mt-1.5 flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Free home sample collection applied!
+              <p className="text-xs text-emerald-800 font-bold mt-2 flex items-center gap-1.5 bg-emerald-50 p-2 rounded-xl border border-emerald-200">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>100% Free Home Sample Collection Applied!</span>
               </p>
             )}
           </div>
 
           {/* Slot Selection */}
           <div className="space-y-3">
-            <label className="text-sm font-extrabold text-slate-800 block">Slot</label>
+            <label className="text-xs font-black uppercase tracking-wider text-slate-700 block">
+              3. Date & Time Slot
+            </label>
             
             {/* Quick date picks & date input */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setSlotDate(todayStr)}
                 className={`py-2 px-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                   slotDate === todayStr
-                    ? 'bg-teal-50 border-teal-600 text-teal-800'
+                    ? 'bg-teal-700 border-teal-700 text-white shadow-xs'
                     : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -292,7 +330,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 onClick={() => setSlotDate(tomorrowStr)}
                 className={`py-2 px-3 text-xs font-bold rounded-xl border text-center transition-all cursor-pointer ${
                   slotDate === tomorrowStr
-                    ? 'bg-teal-50 border-teal-600 text-teal-800'
+                    ? 'bg-teal-700 border-teal-700 text-white shadow-xs'
                     : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
                 }`}
               >
@@ -315,67 +353,69 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 <select
                   value={slotTime}
                   onChange={(e) => setSlotTime(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-600 appearance-none cursor-pointer"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-teal-600 appearance-none cursor-pointer"
                 >
                   {AVAILABLE_TIME_SLOTS.map((slot) => (
                     <option key={slot} value={slot}>
-                      {slot} (Available)
+                      {slot} (Slots Available)
                     </option>
                   ))}
                 </select>
                 <Clock className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               </div>
               {errors.slotTime && (
-                <p className="text-xs font-semibold text-red-600 mt-1">{errors.slotTime}</p>
+                <p className="text-xs font-semibold text-rose-600 mt-1">{errors.slotTime}</p>
               )}
             </div>
           </div>
 
           {/* Patient Details */}
-          <div className="space-y-3 pt-2 border-t border-slate-100">
-            <label className="text-sm font-extrabold text-slate-800 block">Patient details</label>
+          <div className="space-y-3 pt-3 border-t border-slate-100">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-700 block">
+              4. Patient Details
+            </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <input
                   type="text"
-                  placeholder="Patient full name"
+                  placeholder="Patient Full Name"
                   value={patientName}
                   onChange={(e) => {
                     setPatientName(e.target.value);
                     if (errors.patientName) setErrors((prev) => ({ ...prev, patientName: undefined }));
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 ${
-                    errors.patientName ? 'border-red-400 bg-red-50/30' : 'border-slate-200'
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 transition-all ${
+                    errors.patientName ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 bg-slate-50/50 focus:bg-white'
                   }`}
                 />
                 {errors.patientName && (
-                  <p className="text-[11px] font-semibold text-red-600 mt-1">{errors.patientName}</p>
+                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.patientName}</p>
                 )}
               </div>
 
               <div>
                 <input
                   type="tel"
-                  placeholder="10-digit mobile number"
+                  placeholder="10-Digit Mobile Number"
                   maxLength={10}
                   value={patientPhone}
                   onChange={(e) => {
                     setPatientPhone(e.target.value);
                     if (errors.patientPhone) setErrors((prev) => ({ ...prev, patientPhone: undefined }));
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 ${
-                    errors.patientPhone ? 'border-red-400 bg-red-50/30' : 'border-slate-200'
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 transition-all ${
+                    errors.patientPhone ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 bg-slate-50/50 focus:bg-white'
                   }`}
                 />
                 {errors.patientPhone && (
-                  <p className="text-[11px] font-semibold text-red-600 mt-1">{errors.patientPhone}</p>
+                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.patientPhone}</p>
                 )}
               </div>
 
               <div>
                 <input
                   type="number"
-                  placeholder="Age (e.g. 35)"
+                  placeholder="Age in Years (e.g. 35)"
                   min={1}
                   max={120}
                   value={patientAge}
@@ -383,24 +423,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                     setPatientAge(e.target.value);
                     if (errors.patientAge) setErrors((prev) => ({ ...prev, patientAge: undefined }));
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 ${
-                    errors.patientAge ? 'border-red-400 bg-red-50/30' : 'border-slate-200'
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 transition-all ${
+                    errors.patientAge ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 bg-slate-50/50 focus:bg-white'
                   }`}
                 />
                 {errors.patientAge && (
-                  <p className="text-[11px] font-semibold text-red-600 mt-1">{errors.patientAge}</p>
+                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.patientAge}</p>
                 )}
               </div>
 
-              <div className="flex rounded-xl border border-slate-200 overflow-hidden p-0.5 bg-slate-50">
+              <div className="flex rounded-xl border border-slate-200 overflow-hidden p-0.5 bg-slate-100">
                 {(['Male', 'Female', 'Other'] as const).map((g) => (
                   <button
                     key={g}
                     type="button"
                     onClick={() => setPatientGender(g)}
-                    className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                       patientGender === g
-                        ? 'bg-white text-slate-900 shadow-xs'
+                        ? 'bg-white text-slate-900 shadow-2xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
@@ -413,66 +453,81 @@ export const BookingModal: React.FC<BookingModalProps> = ({
 
           {/* Address Section */}
           <div className="space-y-1.5">
-            <label className="text-sm font-extrabold text-slate-800 block">
-              {mode === 'home' ? 'Address' : 'Centre Location'}
+            <label className="text-xs font-black uppercase tracking-wider text-slate-700 block">
+              {mode === 'home' ? '5. Home Collection Address' : '5. Centre Location'}
             </label>
             {mode === 'home' ? (
               <div>
                 <input
                   type="text"
-                  placeholder="Home address (House/Flat No, Landmark, Area)"
+                  placeholder="Complete Address (House/Flat No, Landmark, Area in Patna)"
                   value={address}
                   onChange={(e) => {
                     setAddress(e.target.value);
                     if (errors.address) setErrors((prev) => ({ ...prev, address: undefined }));
                   }}
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 ${
-                    errors.address ? 'border-red-400 bg-red-50/30' : 'border-slate-200'
+                  className={`w-full px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-medium outline-none focus:ring-2 focus:ring-teal-600 transition-all ${
+                    errors.address ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200 bg-slate-50/50 focus:bg-white'
                   }`}
                 />
                 {errors.address && (
-                  <p className="text-[11px] font-semibold text-red-600 mt-1">{errors.address}</p>
+                  <p className="text-[11px] font-semibold text-rose-600 mt-1">{errors.address}</p>
                 )}
               </div>
             ) : (
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600">
-                <p className="font-bold text-slate-800">{lab.name} — Main Centre</p>
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-600 space-y-1">
+                <p className="font-bold text-slate-900">{lab.name} — Main Diagnostic Centre</p>
                 <p>{lab.address}</p>
-                <p className="text-teal-700 font-semibold mt-1">
-                  Carry photo ID & booking confirmation on appointment day.
+                <p className="text-teal-700 font-semibold pt-1">
+                  ✓ Photo ID & booking QR code required on arrival.
                 </p>
               </div>
             )}
           </div>
 
-          {/* Estimated Total */}
-          <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-            <div>
-              <span className="text-xs text-slate-500 font-medium">Estimated total:</span>
-              <span className="ml-1 text-base sm:text-lg font-black text-slate-900">
+          {/* Pricing Breakdown Summary Card */}
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+            <div className="flex items-center justify-between text-xs text-slate-600">
+              <span>Tests Subtotal ({selectedCount(selectedTestIds)}):</span>
+              <span className="font-bold text-slate-900">{formatCurrency(totals.subtotal)}</span>
+            </div>
+
+            {mode === 'home' && (
+              <div className="flex items-center justify-between text-xs text-slate-600">
+                <span>Phlebotomist Home Dispatch:</span>
+                <span className={totals.collectionFee === 0 ? 'text-emerald-700 font-bold' : 'font-bold text-slate-900'}>
+                  {totals.collectionFee === 0 ? 'FREE' : formatCurrency(totals.collectionFee)}
+                </span>
+              </div>
+            )}
+
+            <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-bold text-slate-900 block">Total Payable</span>
+                <span className="text-[11px] text-slate-500">Pay online or after sample collection</span>
+              </div>
+              <span className="text-xl font-black text-teal-700">
                 {formatCurrency(totals.totalAmount)}
               </span>
-              {totals.collectionFee > 0 && (
-                <span className="text-xs text-slate-400 block">
-                  (Includes ₹{totals.collectionFee} home collection)
-                </span>
-              )}
             </div>
           </div>
 
           {/* Submit Button */}
-          <div className="pt-2">
+          <div className="pt-1">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3.5 px-6 rounded-2xl bg-teal-700 hover:bg-teal-800 active:scale-98 text-white font-extrabold text-sm sm:text-base transition-all shadow-md shadow-teal-700/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 active:scale-98 text-white font-black text-sm sm:text-base transition-all shadow-lg shadow-teal-700/20 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
               {isSubmitting ? (
-                <span>Confirming booking...</span>
+                <>
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <span>Confirming Certified Appointment...</span>
+                </>
               ) : mode === 'home' ? (
-                <span>Confirm home collection</span>
+                <span>Confirm Home Sample Collection →</span>
               ) : (
-                <span>Confirm centre visit</span>
+                <span>Confirm Centre Visit Appointment →</span>
               )}
             </button>
           </div>
@@ -481,3 +536,8 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     </div>
   );
 };
+
+function selectedCount(ids: string[]): string {
+  return `${ids.length} ${ids.length === 1 ? 'test' : 'tests'}`;
+}
+
