@@ -46,6 +46,7 @@ import { SosModal } from './components/SosModal';
 import { AuthModal } from './components/AuthModal';
 import { AdminConsoleModal } from './components/AdminConsoleModal';
 import { DoctorPortalModal } from './components/DoctorPortalModal';
+import { BloodBridgeModal } from './components/BloodBridgeModal';
 import { FloatingAIButton } from './components/FloatingAIButton';
 import { QuickDemoBar } from './components/QuickDemoBar';
 
@@ -108,6 +109,7 @@ export default function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAdminConsoleOpen, setIsAdminConsoleOpen] = useState(false);
   const [isDoctorPortalOpen, setIsDoctorPortalOpen] = useState(false);
+  const [isBloodBridgeModalOpen, setIsBloodBridgeModalOpen] = useState(false);
 
   // Bookings list synced with backend
   const [bookings, setBookings] = useState<BookingRequest[]>([]);
@@ -260,6 +262,7 @@ export default function App() {
             }}
             onOpenAI={() => setIsAIModalOpen(true)}
             onOpenSOS={() => setIsSosModalOpen(true)}
+            onOpenBloodBridge={() => setIsBloodBridgeModalOpen(true)}
           />
         )}
 
@@ -747,10 +750,17 @@ export default function App() {
         onClose={() => setIsSosModalOpen(false)}
       />
 
-      {/* Persistent Floating AI Action Button */}
+      {/* BloodBridge AI Emergency Blood & Donor Modal */}
+      <BloodBridgeModal
+        isOpen={isBloodBridgeModalOpen}
+        onClose={() => setIsBloodBridgeModalOpen(false)}
+      />
+
+      {/* Persistent Floating AI Action Button Stack (BloodBridge AI directly above Ask OneCare AI) */}
       <FloatingAIButton
         onClick={() => setIsAIModalOpen(true)}
         isOpen={isAIModalOpen}
+        onOpenBloodBridge={() => setIsBloodBridgeModalOpen(true)}
       />
     </div>
   );

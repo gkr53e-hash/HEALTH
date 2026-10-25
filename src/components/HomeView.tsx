@@ -24,23 +24,29 @@ import {
   Award,
   ChevronRight,
   ShieldAlert,
+  Radio,
+  Droplets,
 } from 'lucide-react';
+import { HeroClinicalVisualizer } from './HeroClinicalVisualizer';
 
 interface HomeViewProps {
   onNavigate: (tab: string) => void;
   onOpenAI: () => void;
   onOpenSOS: () => void;
+  onOpenBloodBridge?: () => void;
 }
 
 export const HomeView: React.FC<HomeViewProps> = ({
   onNavigate,
   onOpenAI,
   onOpenSOS,
+  onOpenBloodBridge,
 }) => {
   const [activeStoryTab, setActiveStoryTab] = useState<'triage' | 'opd' | 'labs' | 'ambulance'>('triage');
   const [heroSearch, setHeroSearch] = useState('');
 
   const quickChips = [
+    { label: '🩸 BloodBridge AI', isBloodBridge: true },
     { label: 'CBC Blood Test', tab: 'lab-tests' },
     { label: 'Cardiologist', tab: 'opd' },
     { label: 'Thyroid Profile', tab: 'lab-tests' },
@@ -49,8 +55,10 @@ export const HomeView: React.FC<HomeViewProps> = ({
     { label: 'Ask Clinical AI', isAI: true },
   ];
 
-  const handleQuickChip = (chip: { label: string; tab?: string; isAI?: boolean }) => {
-    if (chip.isAI) {
+  const handleQuickChip = (chip: { label: string; tab?: string; isAI?: boolean; isBloodBridge?: boolean }) => {
+    if (chip.isBloodBridge && onOpenBloodBridge) {
+      onOpenBloodBridge();
+    } else if (chip.isAI) {
       onOpenAI();
     } else if (chip.tab) {
       onNavigate(chip.tab);
@@ -126,12 +134,48 @@ export const HomeView: React.FC<HomeViewProps> = ({
 
   return (
     <div className="bg-[#040814] text-white selection:bg-teal-500 selection:text-white">
+      {/* Top Live Emergency & Clinical Broadcast Marquee Ticker */}
+      <div className="bg-slate-950/95 border-b border-teal-500/20 overflow-hidden py-2 px-3 sm:px-6 relative z-20 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-300 text-[10px] font-black uppercase tracking-wider shrink-0 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-ping" />
+            <span>LIVE DISPATCH</span>
+          </div>
+          <div className="overflow-hidden flex-1 relative">
+            <div className="animate-marquee flex items-center gap-8 text-xs font-semibold text-slate-300 whitespace-nowrap">
+              <span className="flex items-center gap-2">
+                <span className="text-emerald-400 font-bold">●</span> 147 Total Beds &amp; 33 ICU beds available across Patna Network (AIIMS, Paras, Medanta)
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-teal-400 font-bold">●</span> 108 Emergency Ambulance GPS live fleet active — Avg response &lt; 12 mins
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-cyan-400 font-bold">●</span> 45-min Doorstep Medicine Delivery live across Bailey Rd, Kankarbagh &amp; Boring Rd
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-amber-400 font-bold">●</span> Free Home Phlebotomy Sample Collection available for tomorrow 6:00 AM – 11:00 AM
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-rose-400 font-bold">●</span> 18 Certified MD Doctors online for instant video tele-consultations
+              </span>
+              {/* Seamless loop duplicate */}
+              <span className="flex items-center gap-2">
+                <span className="text-emerald-400 font-bold">●</span> 147 Total Beds &amp; 33 ICU beds available across Patna Network (AIIMS, Paras, Medanta)
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="text-teal-400 font-bold">●</span> 108 Emergency Ambulance GPS live fleet active — Avg response &lt; 12 mins
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-32 border-b border-slate-800/80">
-        {/* Subtle Ambient Radial Lighting */}
+      <section className="relative overflow-hidden pt-10 pb-16 sm:pt-16 sm:pb-28 border-b border-slate-800/80">
+        {/* Subtle Ambient Radial Lighting with Gentle Floating Animations */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-gradient-to-b from-teal-500/15 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 -right-20 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none animate-float-gentle" />
+        <div className="absolute top-1/3 -right-20 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl pointer-events-none animate-float-delayed" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -204,6 +248,35 @@ export const HomeView: React.FC<HomeViewProps> = ({
               {/* Action Buttons */}
               <div className="flex flex-wrap items-center gap-3.5 pt-1">
                 <button
+                  onClick={() => {
+                    try {
+                      const savedUrl = localStorage.getItem('bloodbridge_custom_url');
+                      const autoRedirect = localStorage.getItem('bloodbridge_auto_redirect');
+                      if (
+                        savedUrl &&
+                        savedUrl.trim() !== '' &&
+                        !savedUrl.includes('github.com') &&
+                        autoRedirect === 'true'
+                      ) {
+                        let finalUrl = savedUrl.trim();
+                        if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                          finalUrl = `https://${finalUrl}`;
+                        }
+                        window.open(finalUrl, '_blank', 'noopener,noreferrer');
+                        return;
+                      }
+                    } catch (e) {
+                      console.error(e);
+                    }
+                    if (onOpenBloodBridge) onOpenBloodBridge();
+                  }}
+                  className="px-5 py-3.5 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg shadow-rose-600/30 active:scale-98 cursor-pointer group"
+                >
+                  <Droplets className="w-4 h-4 text-rose-200 fill-white group-hover:scale-110 transition-transform" />
+                  <span>BloodBridge AI</span>
+                </button>
+
+                <button
                   onClick={onOpenAI}
                   className="px-5 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg active:scale-98 cursor-pointer group"
                 >
@@ -262,107 +335,40 @@ export const HomeView: React.FC<HomeViewProps> = ({
               </div>
             </div>
 
-            {/* Right Hero Clinical Showcase Card */}
+            {/* Right Hero Clinical Showcase Card: Interactive Animated Medical Visualizer */}
             <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl bg-slate-900 group">
-                <img
-                  src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=800"
-                  alt="Doctor consultation"
-                  className="w-full h-[380px] sm:h-[450px] object-cover object-top opacity-85 group-hover:scale-102 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
-
-                {/* Floating Top Pill: Live Tele-OPD Ready */}
-                <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-                  <span className="px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md border border-slate-700 text-teal-300 text-xs font-black flex items-center gap-1.5 shadow-md">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                    <span>VIDEO TELE-CONSULT LIVE</span>
-                  </span>
-
-                  <span className="px-2.5 py-1 rounded-full bg-teal-950/85 border border-teal-500/40 text-teal-300 text-[11px] font-bold">
-                    Dr. Priya Sharma (MD)
-                  </span>
-                </div>
-
-                {/* Live Telemetry ECG Wave Graphic */}
-                <div className="absolute bottom-20 left-4 right-4 p-3 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-700/80">
-                  <div className="flex items-center justify-between text-[11px] text-slate-300 font-bold mb-1.5">
-                    <span className="flex items-center gap-1.5 text-teal-400">
-                      <HeartPulse className="w-3.5 h-3.5 text-red-500 animate-pulse" />
-                      <span>Live Clinical Telemetry</span>
-                    </span>
-                    <span className="text-emerald-400">Normal Sinus Rhythm (72 BPM)</span>
-                  </div>
-                  {/* ECG Wave SVG */}
-                  <div className="w-full h-8 overflow-hidden flex items-center">
-                    <svg
-                      className="w-full h-full stroke-teal-400 fill-none"
-                      viewBox="0 0 300 32"
-                      preserveAspectRatio="none"
-                    >
-                      <path
-                        d="M0 16 L40 16 L48 6 L56 26 L64 16 L100 16 L108 6 L116 26 L124 16 L160 16 L168 4 L176 28 L184 16 L220 16 L228 8 L236 24 L244 16 L300 16"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Bottom Live Beds Status & Action */}
-                <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3">
-                  <div
-                    onClick={() => onNavigate('emergency')}
-                    className="p-3 rounded-2xl bg-slate-900/95 backdrop-blur-md border border-slate-700 flex items-center gap-3 cursor-pointer hover:border-red-500/50 transition-colors flex-1"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-red-600/20 text-red-400 flex items-center justify-center shrink-0">
-                      <Building2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="text-[10px] font-bold uppercase text-slate-400">
-                        Live Beds in Patna
-                      </div>
-                      <div className="text-lg font-black text-white flex items-center gap-1.5">
-                        <span>147 Free</span>
-                        <span className="text-[10px] text-emerald-400 font-bold">(33 ICU)</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={() => onNavigate('lab-tests')}
-                    className="px-4 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs transition-all shadow-md cursor-pointer flex items-center gap-1.5 shrink-0"
-                  >
-                    <FlaskConical className="w-4 h-4" />
-                    <span>Book Tests</span>
-                  </button>
-                </div>
-              </div>
+              <HeroClinicalVisualizer
+                onNavigate={onNavigate}
+                onOpenAI={onOpenAI}
+                onOpenSOS={onOpenSOS}
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Network Hospitals & Partner Labs Strip */}
-      <section className="py-6 border-b border-slate-800 bg-slate-950/80">
+      {/* Network Hospitals & Partner Labs Strip with Smooth Infinite Animated Marquee */}
+      <section className="py-5 border-b border-slate-800 bg-slate-950/80 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 shrink-0">
-              Trusted Network Partners & Diagnostic Chains:
+            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 shrink-0 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+              <span>Trusted Network Partners &amp; Diagnostic Chains:</span>
             </span>
 
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 max-w-full">
-              {networkPartners.map((p, idx) => (
-                <div
-                  key={idx}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 flex items-center gap-2 shrink-0 hover:border-slate-700 transition-colors"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-                  <span>{p.name}</span>
-                  <span className="text-[10px] text-slate-400 font-normal">({p.type})</span>
-                </div>
-              ))}
+            <div className="overflow-hidden flex-1 relative">
+              <div className="animate-marquee flex items-center gap-3">
+                {[...networkPartners, ...networkPartners].map((p, idx) => (
+                  <div
+                    key={idx}
+                    className="px-3.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-300 flex items-center gap-2 shrink-0 hover:border-teal-500/40 hover:bg-slate-800/80 transition-all cursor-default shadow-xs"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400" />
+                    <span>{p.name}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">({p.type})</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>

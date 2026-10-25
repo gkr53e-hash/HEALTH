@@ -285,7 +285,9 @@ export const OpdView: React.FC<OpdViewProps> = ({
                       <h3 className="text-base font-extrabold text-slate-900 truncate">
                         {doc.name}
                       </h3>
-                      <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" title="Verified Specialist" />
+                      <span title="Verified Specialist">
+                        <ShieldCheck className="w-4 h-4 text-teal-600 shrink-0" />
+                      </span>
                     </div>
 
                     <p className="text-xs font-bold text-teal-700 mt-0.5">{doc.specialty}</p>
